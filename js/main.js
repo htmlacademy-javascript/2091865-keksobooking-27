@@ -1,3 +1,6 @@
+// Функции взяты из интернета и доработана
+// Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
+
 function getRandomPositiveInteger (a, b) {
   if(typeof a !== 'number' || typeof b !== 'number') {
     return NaN;
