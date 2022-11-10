@@ -84,7 +84,5 @@ createCardElement.forEach (({ author, offer }) => {
   return cardElement;
 });
 
-
 const mapCanvas = document.querySelector('#map-canvas');
 mapCanvas.appendChild(cardFragment);
-
