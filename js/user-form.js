@@ -4,6 +4,9 @@ const price = form.querySelector('#price');
 const roomNumberElement = document.querySelector('#room_number');
 const capacityElement = document.querySelector('#capacity');
 const typeOfHouse = form.querySelector('#type');
+const timeIn = form.querySelector('#timein');
+const timeOut = form.querySelector('#timeout');
+
 
 const roomsToGuests = {
   1: ['1'],
@@ -77,6 +80,19 @@ function getPriceErrorMessage (value) {
 }
 
 pristine.addValidator(price, validatePrice, getPriceErrorMessage);
+
+//время заезда и выезда
+const onTimeInChange = () => {
+  timeOut.value = timeIn.value;
+};
+
+const onTimeOutChange = () => {
+  timeIn.value = timeOut.value;
+};
+
+timeIn.addEventListener('change', onTimeInChange);
+
+timeOut.addEventListener('change', onTimeOutChange);
 
 //отправка формы
 form.addEventListener('submit', (evt) => {
