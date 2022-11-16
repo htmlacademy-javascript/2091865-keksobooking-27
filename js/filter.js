@@ -38,3 +38,4 @@ const activePage = () => {
 
 activePage();
 
+export {disabledPage, activePage};

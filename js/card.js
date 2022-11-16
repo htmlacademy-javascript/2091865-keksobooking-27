@@ -1,4 +1,4 @@
-import { createAdvertisement } from './data.js';
+//import {createAdvertisement} from './data.js';//
 
 const TYPES = {
   flat: 'Квартира',
@@ -10,9 +10,9 @@ const TYPES = {
 
 const cardTemplate = document.querySelector('#card').content.querySelector('.popup'); //нашли шаблон, записали в переменную. 2)обращаемся к содержимому
 
-const createCardElement = createAdvertisement(); //функция генерации объявлений
+//const createCardElement = createAdvertisement();//
 
-const cardFragment = document.createDocumentFragment();// черный ящик
+//const cardFragment = document.createDocumentFragment();//
 
 const offerDescription = (cardElement, description) => {
   const descriptionElement = cardElement.querySelector('.popup__description');
@@ -66,8 +66,7 @@ const offerPhotos = (cardElement, photos, title) => {
   }
 };
 
-
-createCardElement.forEach (({ author, offer }) => {
+const createCard = ({ author, offer }) => {
   const cardElement = cardTemplate.cloneNode(true);
   cardElement.querySelector('.popup__avatar').src = author.avatar;
   cardElement.querySelector('.popup__title').textContent = offer.title;
@@ -80,9 +79,12 @@ createCardElement.forEach (({ author, offer }) => {
   offerDescription(cardElement, offer.description);
   offerFeatures(cardElement, offer.features);
   offerPhotos(cardElement, offer.photos, offer.title);
-  cardFragment.appendChild(cardElement);
+  //cardFragment.appendChild(cardElement);
   return cardElement;
-});
+};
 
-const mapCanvas = document.querySelector('#map-canvas');
-mapCanvas.appendChild(cardFragment);
+export{createCard};
+
+//const mapCanvas = document.querySelector('#map-canvas');//
+//mapCanvas.appendChild(cardFragment);//
+
