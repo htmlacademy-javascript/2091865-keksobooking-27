@@ -59,4 +59,5 @@ const getAdvertisement = () => {
 };
 
 const createAdvertisement = () => Array.from({length: 10}, getAdvertisement);
+
 export {createAdvertisement};

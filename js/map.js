@@ -1,26 +1,29 @@
-import {createCard} from './card.js';
-//import {createAdvertisement} from './data.js';//
 import {activePage} from './filter.js';
+import {createCard} from './card.js';
+import {createAdvertisement} from './data.js';
+
+const coordinate = {
+  lat: 35.68351,
+  lng: 139.76757,
+};
+
+const zoom = 10;
 
 const address = document.querySelector('#address');
 const resetButton = document.querySelector('.ad-form__reset');
 
-const coordinate = {
-  lat: 35.68351,
-  lng: 139.76757
-};
-
 // создает карту
-const map = L.map('map-canvas').on('load', () => {
-  activePage(true);
-}).setView({
-  coordinate
-}, 10);//настройка зума
+const map = L.map('map-canvas')
+  .on('load', () => {
+    activePage(true);
+  })
+  .setView(coordinate, zoom);
 
-//добавляет слой с картой
+//добавлят слой
 L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>',
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
 ).addTo(map);
 
@@ -37,9 +40,7 @@ const pinIcon = L.icon({ //добавляет иконку синюю?
 });
 
 const mainPinMarker = L.marker(
-  {
-    coordinate
-  },
+  coordinate,
   {
     draggable: true, //метку можно передвигать по карте
     icon: mainPinIcon, //добавлчем изображение маркера
@@ -49,39 +50,38 @@ const mainPinMarker = L.marker(
 
 const markerGroup = L.layerGroup().addTo(map);
 
-const createMarkers = (offers) => { //ф-ция готовит все маркеры и собирает в группу
-  offers.forEach((offer) => {
-    const marker = L.marker(
-      {
-        lat: offer.lat,
-        lng: offer.lng
-      },
-      {
-        icon: pinIcon,
-      },
-    );
-    marker.addTo(markerGroup).bindPopup(createCard(offer));
-  });
+const createMarkers = (offer) => {
+  const marker = L.marker(
+    {
+      lat: offer.location.lat,
+      lng: offer.location.lng,
+    },
+    {
+      pinIcon,
+    }
+  );
+
+  marker
+    .addTo(markerGroup)
+    .bindPopup(createCard(offer));
 };
+
+const offers = createAdvertisement();
+offers.forEach((offer) => {
+  createMarkers(offer);
+});
 
 mainPinMarker.on('moveend', (evt) => {
   const getCoordinate = evt.target.getLatLng();
   address.value = `${getCoordinate.lat.toFixed(5)} ${getCoordinate.lng.toFixed(5)}`;
 });
 
-const setOnMapLoad = (cb) => {
-  map.on('load', cb);
-};
-
 //сбрасывает
 resetButton.addEventListener('click', () => {
-  mainPinMarker.setLatLng({
-    coordinate});
+  mainPinMarker.setLatLng(
+    coordinate);
 
   map.setView({
     coordinate});
 });
-
-setOnMapLoad();
-createMarkers();
 
