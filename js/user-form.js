@@ -81,6 +81,40 @@ function getPriceErrorMessage (value) {
 
 pristine.addValidator(price, validatePrice, getPriceErrorMessage);
 
+price.placeholder = minPrices[typeOfHouse.value];
+
+typeOfHouse.addEventListener('change', () => {
+  price.placeholder = minPrices[typeOfHouse.value];
+});
+
+//слайдер
+const sliderElement = document.querySelector('.ad-form__slider');
+
+noUiSlider.create(sliderElement, {
+  range: {
+    min: 0,
+    max: 100000,
+  },
+  start: price.placeholder,
+  step: 1,
+  connect: 'lower',
+  format: {
+    to: function (value) {
+      return value.toFixed(0);
+    },
+    from: function (value) {
+      return parseFloat(value);
+    },
+  },
+});
+
+sliderElement.noUiSlider.on('change', () => {
+  price.value = sliderElement.noUiSlider.get(); //вернет значение
+  pristine.validate(price);
+});
+
+price.addEventListener('change', () => sliderElement.noUiSlider.set(price.value));
+
 //время заезда и выезда
 const onTimeInChange = () => {
   timeOut.value = timeIn.value;
@@ -99,4 +133,3 @@ form.addEventListener('submit', (evt) => {
   evt.preventDefault();
   pristine.validate();
 });
-

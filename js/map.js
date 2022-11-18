@@ -35,8 +35,8 @@ const mainPinIcon = L.icon({ //иконка маркера
 
 const pinIcon = L.icon({ //добавляет иконку синюю?
   iconUrl: './img/pin.svg',
-  iconSize: [52, 52],
-  iconAnchor: [26, 52],
+  iconSize: [40, 40],
+  iconAnchor: [26, 40],
 });
 
 const mainPinMarker = L.marker(
