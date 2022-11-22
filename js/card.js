@@ -66,7 +66,7 @@ const offerPhotos = (cardElement, photos, title) => {
   }
 };
 
-const createCard = ({ author, offer }) => {
+const createCard = ({author, offer }) => {
   const cardElement = cardTemplate.cloneNode(true);
   cardElement.querySelector('.popup__avatar').src = author.avatar;
   cardElement.querySelector('.popup__title').textContent = offer.title;
