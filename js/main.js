@@ -8,6 +8,8 @@ import './message.js';
 import {showSuccessMessage, showErrorMessage} from './message.js';
 import {setOnFormReset} from './user-form.js';
 import {onDataLoad} from './map.js';
+import { showAlert } from './util.js';
+
 
 const onSendDataSuccess = () => {
   setOnFormReset();
@@ -23,4 +25,4 @@ setOnFormSubmit(async (data) => {
 //activePage();
 //};
 
-getData(onDataLoad);
+getData(onDataLoad, showAlert);
