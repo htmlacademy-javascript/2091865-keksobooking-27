@@ -1,3 +1,7 @@
+import { sendData } from './api.js';
+import {resetMap} from './map.js';
+import { showErrorMessage, showSuccessMessage } from './message.js';
+
 const form = document.querySelector('.ad-form');
 const title = form.querySelector('#title');
 const price = form.querySelector('#price');
@@ -7,6 +11,9 @@ const typeOfHouse = form.querySelector('#type');
 const timeIn = form.querySelector('#timein');
 const timeOut = form.querySelector('#timeout');
 
+const submitButton = form.querySelector('.ad-form__submit');
+const resetButton = form.querySelector('.ad-form__reset');
+const mapFilters = document.querySelector('.map__filters');
 
 const roomsToGuests = {
   1: ['1'],
@@ -128,8 +135,78 @@ timeIn.addEventListener('change', onTimeInChange);
 
 timeOut.addEventListener('change', onTimeOutChange);
 
-//отправка формы
-form.addEventListener('submit', (evt) => {
+const resetForm = () => {
+  form.reset();
+  sliderElement.noUiSlider.set(price.value);
+};
+
+//отправляет форму
+const blockButtonSubmit = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Отправляю...';
+};
+
+const unblockButtonSubmit = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+};
+
+// const setOnFormSubmit = (cb) => {
+//   form.addEventListener('submit', async (evt) => {
+//     evt.preventDefault();
+//     const isValid = pristine.validate();
+//     if (isValid) {
+//       blockButtonSubmit();
+//       await cb(new FormData(form));
+//       unblockButtonSubmit();
+//     }
+//   });
+// };
+const setOnFormReset = () => {
+  form.reset();
+  mapFilters.reset();
+  resetMap();
+  pristine.reset();
+};
+
+// const onSendFail = () => {
+//   showErrorMessage();
+// };
+
+// const onSendDataSuccess = () => {
+//   setOnFormReset();
+//   showSuccessMessage();
+// };
+
+const onSendSuccess = () => {
+  showSuccessMessage();
+  setOnFormReset();
+  unblockButtonSubmit();
+};
+
+const onSendError = () => {
+  showErrorMessage();
+  unblockButtonSubmit();
+};
+
+const setOnFormSubmit = (evt) => {
   evt.preventDefault();
-  pristine.validate();
+
+  const isValid = pristine.validate();
+
+  if (isValid) {
+    blockButtonSubmit();
+    sendData(
+      onSendSuccess,
+      onSendError,
+      new FormData(evt.target),
+    );
+  }
+};
+
+resetButton.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  setOnFormReset();
 });
+
+export{setOnFormReset, setOnFormSubmit, resetForm};

@@ -23,25 +23,6 @@ const offerDescription = (cardElement, description) => {
   }
 };
 
-const offerFeatures = (cardElement, features) => {
-  const featuresList = cardElement.querySelector('.popup__features');
-
-  if(features.length === 0) {
-    featuresList.remove();
-    return;
-  }
-
-  const modifiers = features.map((feature)=>`popup__feature--${ feature}`);
-
-  const fiatureItems = cardElement.querySelectorAll('.popup__feature');
-  fiatureItems.forEach((featureItem) => {
-    const modifier = featureItem.classList[1];
-    if(!modifiers.includes(modifier)) {
-      featureItem.remove();
-    }
-  });
-};
-
 const createPhoto = (photo, title) => {
   const photoElement = document.createElement('img');
   photoElement.classList.add('popup--photo');
@@ -66,7 +47,7 @@ const offerPhotos = (cardElement, photos, title) => {
   }
 };
 
-const createCard = ({ author, offer }) => {
+const createCard = ({author, offer }) => {
   const cardElement = cardTemplate.cloneNode(true);
   cardElement.querySelector('.popup__avatar').src = author.avatar;
   cardElement.querySelector('.popup__title').textContent = offer.title;
@@ -76,8 +57,21 @@ const createCard = ({ author, offer }) => {
   cardElement.querySelector('.popup__text--capacity').textContent = `${offer.rooms} комнаты для ${offer.guests} гостей`;
   cardElement.querySelector('.popup__text--time').textContent = `Заезд после ${offer.checkin}, выезд до ${offer.checkout}`;
 
+  const featuresList = cardElement.querySelector('.popup__features');
+  const featuresItems = featuresList.querySelectorAll('.popup__feature');
+  if (offer.features) {
+    featuresItems.forEach((featuresItem) => {
+      const modifier = offer.features.some((feature) => featuresItem.classList.contains(`popup__feature--${feature}`));
+
+      if (modifier) {
+        featuresItem.remove();
+      }
+    });
+  } else {
+    featuresList.remove();
+  }
+
   offerDescription(cardElement, offer.description);
-  offerFeatures(cardElement, offer.features);
   offerPhotos(cardElement, offer.photos, offer.title);
   //cardFragment.appendChild(cardElement);
   return cardElement;
@@ -87,4 +81,3 @@ export{createCard};
 
 //const mapCanvas = document.querySelector('#map-canvas');//
 //mapCanvas.appendChild(cardFragment);//
-
