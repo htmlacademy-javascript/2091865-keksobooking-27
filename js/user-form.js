@@ -189,12 +189,6 @@ const onSendError = () => {
   unblockButtonSubmit();
 };
 
-// const onSetFormSubmit = () => {
-//   form.addEventListener('submit', (evt) => {
-//     evt.preventDefault();
-//   });
-// };
-
 const setOnFormSubmit = (evt) => {
   evt.preventDefault();
 
