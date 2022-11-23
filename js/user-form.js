@@ -1,4 +1,6 @@
+import { sendData } from './api.js';
 import {resetMap} from './map.js';
+import { showErrorMessage, showSuccessMessage } from './message.js';
 
 const form = document.querySelector('.ad-form');
 const title = form.querySelector('#title');
@@ -149,19 +151,17 @@ const unblockButtonSubmit = () => {
   submitButton.textContent = 'Опубликовать';
 };
 
-const setOnFormSubmit = (cb) => {
-  form.addEventListener('submit', async (evt) => {
-    evt.preventDefault();
-    const isValid = pristine.validate();
-    if (isValid) {
-      blockButtonSubmit();
-      await cb(new FormData(form));
-      unblockButtonSubmit();
-    }
-  });
-};
-
-//сбрасывает форму
+// const setOnFormSubmit = (cb) => {
+//   form.addEventListener('submit', async (evt) => {
+//     evt.preventDefault();
+//     const isValid = pristine.validate();
+//     if (isValid) {
+//       blockButtonSubmit();
+//       await cb(new FormData(form));
+//       unblockButtonSubmit();
+//     }
+//   });
+// };
 const setOnFormReset = () => {
   form.reset();
   mapFilters.reset();
@@ -169,9 +169,50 @@ const setOnFormReset = () => {
   pristine.reset();
 };
 
+// const onSendFail = () => {
+//   showErrorMessage();
+// };
+
+// const onSendDataSuccess = () => {
+//   setOnFormReset();
+//   showSuccessMessage();
+// };
+
+const onSendSuccess = () => {
+  showSuccessMessage();
+  setOnFormReset();
+  unblockButtonSubmit();
+};
+
+const onSendError = () => {
+  showErrorMessage();
+  unblockButtonSubmit();
+};
+
+// const onSetFormSubmit = () => {
+//   form.addEventListener('submit', (evt) => {
+//     evt.preventDefault();
+//   });
+// };
+
+const setOnFormSubmit = (evt) => {
+  evt.preventDefault();
+
+  const isValid = pristine.validate();
+
+  if (isValid) {
+    blockButtonSubmit();
+    sendData(
+      onSendSuccess,
+      onSendError,
+      new FormData(evt.target),
+    );
+  }
+};
+
 resetButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   setOnFormReset();
 });
 
-export{setOnFormSubmit, setOnFormReset, resetForm};
+export{setOnFormReset, setOnFormSubmit, resetForm};

@@ -26,6 +26,7 @@ function hideMessage() {
   message.remove();
   document.removeEventListener('keydown', onMessageEscKeydown);
   document.removeEventListener('click', onOverLayClick);
+  // bodyElement.style.overflow = 'hidden';
 }
 
 const showSuccessMessage = () => {
@@ -33,6 +34,7 @@ const showSuccessMessage = () => {
   document.addEventListener('keydown', onMessageEscKeydown);
   document.addEventListener('click', onOverLayClick);
   bodyElement.append(successMessage);
+  // bodyElement.style.overflow = 'hidden';
 };
 
 const showErrorMessage = () => {
@@ -40,6 +42,7 @@ const showErrorMessage = () => {
   document.addEventListener('keydown', onMessageEscKeydown);
   errorButton.addEventListener('click', onErrorButtonClick);
   bodyElement.append(errorMessage);
+  // bodyElement.style.overflow = 'hidden';
 };
 
 export {showSuccessMessage, showErrorMessage};
