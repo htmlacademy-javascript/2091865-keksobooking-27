@@ -33,6 +33,7 @@ const showSuccessMessage = () => {
   document.addEventListener('keydown', onMessageEscKeydown);
   document.addEventListener('click', onOverLayClick);
   bodyElement.append(successMessage);
+  bodyElement.style.overflow = 'hidden';
 };
 
 const showErrorMessage = () => {

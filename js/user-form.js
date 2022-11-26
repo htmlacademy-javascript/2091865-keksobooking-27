@@ -1,6 +1,6 @@
 import { sendData } from './api.js';
 import {resetMap} from './map.js';
-import { showErrorMessage, showSuccessMessage } from './message.js';
+import {showSuccessMessage, showErrorMessage} from './message.js';
 
 const form = document.querySelector('.ad-form');
 const title = form.querySelector('#title');
@@ -10,10 +10,22 @@ const capacityElement = document.querySelector('#capacity');
 const typeOfHouse = form.querySelector('#type');
 const timeIn = form.querySelector('#timein');
 const timeOut = form.querySelector('#timeout');
-
 const submitButton = form.querySelector('.ad-form__submit');
-const resetButton = form.querySelector('.ad-form__reset');
+const resetButton = document.querySelector('.ad-form__reset');
+
 const mapFilters = document.querySelector('.map__filters');
+
+const maxPrice = 100000;
+const minLength = 30;
+const maxLength = 100;
+
+const minPrices = {
+  'bungalow': 0,
+  'flat': 1000,
+  'hotel': 3000,
+  'house': 5000,
+  'palace': 10000,
+};
 
 const roomsToGuests = {
   1: ['1'],
@@ -29,18 +41,13 @@ const guestsToRooms = {
   3: ['3'],
 };
 
-const minPrices = {
-  'bungalow': 0,
-  'flat': 1000,
-  'hotel': 3000,
-  'house': 5000,
-  'palace': 10000,
-};
 
-const pristine = new Pristine(form, {
-  classTo: 'ad-form__element',//класс элемента в котором выведется ошибка
+const pristine = new Pristine(form , {
+  classTo: 'ad-form__element',
+  errorClass: 'ad-form__element--invalid',
   errorTextParent: 'ad-form__element',
-  errorTextClass: 'ad-form__element--invalid',
+  errorTextTag: 'div',
+  errorTextClass: 'ad-form__error'
 });
 
 //валидация комнат и гостей
@@ -68,23 +75,18 @@ const onCapacityChange = () => {
 roomNumberElement.addEventListener('change', onRoomsNumberChange);
 capacityElement.addEventListener('change', onCapacityChange);
 
-//валидация title
-function validateTitle (value) {
-  return title.length >= 30 && value.length <= 100;
-}
+//заголовок!!!!!!!!!!!!!!!!!!!!!
+const validateTitle = (value) => value.length >= minLength && value.length <= maxLength;
 
-pristine.addValidator(title, validateTitle, 'от 30 до 100 символов');//чтобы описать валидации 2/ вторым аргументом - функция проверки 1= элемент формы для валидации 3= сообщение об ошибке
+pristine.addValidator(title, validateTitle, 'от 30 до 100 символов');
 
-//валидация цены
-function validatePrice (value) {
-  return value <= 100000 && value >= minPrices[typeOfHouse.value];
-}
-
-function getPriceErrorMessage (value) {
+//цены!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const validatePrice = (value) => value <= maxPrice && value >= minPrices[typeOfHouse.value];
+const getPriceErrorMessage = (value) => {
   if (value < minPrices[typeOfHouse.value]) {
     return `Минимальная цена для этого типа жилья ${minPrices[typeOfHouse.value]} руб.`;
   }
-}
+};
 
 pristine.addValidator(price, validatePrice, getPriceErrorMessage);
 
@@ -116,7 +118,7 @@ noUiSlider.create(sliderElement, {
 });
 
 sliderElement.noUiSlider.on('change', () => {
-  price.value = sliderElement.noUiSlider.get(); //вернет значение
+  price.value = sliderElement.noUiSlider.get();
   pristine.validate(price);
 });
 
@@ -135,78 +137,61 @@ timeIn.addEventListener('change', onTimeInChange);
 
 timeOut.addEventListener('change', onTimeOutChange);
 
-const resetForm = () => {
-  form.reset();
-  sliderElement.noUiSlider.set(price.value);
-};
+pristine.addValidator(onTimeInChange, onTimeOutChange);
 
-//отправляет форму
+form.addEventListener('change', (evt) => {
+  if (!pristine.validate()) {
+    evt.preventDefault();
+  }
+});
+
+//новая!!!!!!!!!!!!!!!!!!!!
 const blockButtonSubmit = () => {
   submitButton.disabled = true;
   submitButton.textContent = 'Отправляю...';
 };
-
-const unblockButtonSubmit = () => {
+const unlockButtonSubmit = () => {
   submitButton.disabled = false;
   submitButton.textContent = 'Опубликовать';
 };
 
-// const setOnFormSubmit = (cb) => {
-//   form.addEventListener('submit', async (evt) => {
-//     evt.preventDefault();
-//     const isValid = pristine.validate();
-//     if (isValid) {
-//       blockButtonSubmit();
-//       await cb(new FormData(form));
-//       unblockButtonSubmit();
-//     }
-//   });
-// };
-const setOnFormReset = () => {
+const setOnFormReset = () => { //похожие объявления тоже сбрасываются
   form.reset();
   mapFilters.reset();
   resetMap();
   pristine.reset();
+  sliderElement.noUiSlider.reset();
 };
-
-// const onSendFail = () => {
-//   showErrorMessage();
-// };
-
-// const onSendDataSuccess = () => {
-//   setOnFormReset();
-//   showSuccessMessage();
-// };
 
 const onSendSuccess = () => {
   showSuccessMessage();
-  setOnFormReset();
-  unblockButtonSubmit();
 };
-
-const onSendError = () => {
+const onSendFail = () => {
   showErrorMessage();
-  unblockButtonSubmit();
 };
 
-const setOnFormSubmit = (evt) => {
-  evt.preventDefault();
-
-  const isValid = pristine.validate();
-
-  if (isValid) {
-    blockButtonSubmit();
-    sendData(
-      onSendSuccess,
-      onSendError,
-      new FormData(evt.target),
-    );
-  }
+const setUserFormSubmit = (onSuccess, onFail) => {
+  form.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const formData = new FormData(evt.target);
+    if (pristine.validate()) {
+      blockButtonSubmit();
+      sendData(
+        () => {
+          onSuccess();
+          unlockButtonSubmit();
+        },
+        () => {
+          onFail();
+          unlockButtonSubmit();
+        }, formData);
+    }
+  });
 };
 
-resetButton.addEventListener('click', (evt) => {
+setUserFormSubmit(onSendSuccess, onSendFail);//как посмотреть сообщение об ошибке?
+
+resetButton.addEventListener('click', (evt) => { //после отправки и очистки исчезает скролл
   evt.preventDefault();
   setOnFormReset();
 });
-
-export{setOnFormReset, setOnFormSubmit, resetForm};
