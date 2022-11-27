@@ -1,5 +1,3 @@
-//import {createAdvertisement} from './data.js';//
-
 const TYPES = {
   flat: 'Квартира',
   bungalow: 'Бунгало',
@@ -8,11 +6,7 @@ const TYPES = {
   hotel: 'Отель'
 };
 
-const cardTemplate = document.querySelector('#card').content.querySelector('.popup'); //нашли шаблон, записали в переменную. 2)обращаемся к содержимому
-
-//const createCardElement = createAdvertisement();//
-
-//const cardFragment = document.createDocumentFragment();//
+const cardTemplate = document.querySelector('#card').content.querySelector('.popup');
 
 const offerDescription = (cardElement, description) => {
   const descriptionElement = cardElement.querySelector('.popup__description');
@@ -73,11 +67,7 @@ const createCard = ({author, offer }) => {
 
   offerDescription(cardElement, offer.description);
   offerPhotos(cardElement, offer.photos, offer.title);
-  //cardFragment.appendChild(cardElement);
   return cardElement;
 };
 
 export{createCard};
-
-//const mapCanvas = document.querySelector('#map-canvas');//
-//mapCanvas.appendChild(cardFragment);//

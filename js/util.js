@@ -1,5 +1,4 @@
-// Функции взяты из интернета и доработаны
-// Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
+const ALERT_SHOW_TIME = 5000;
 
 function getRandomPositiveInteger(a, b) {
   if (typeof a !== 'number' || typeof b !== 'number') {
@@ -8,10 +7,10 @@ function getRandomPositiveInteger(a, b) {
   if (a < 0 || b < 0) {
     return NaN;
   }
-  const lower = Math.ceil(Math.min(a, b)); // округление в меньшую
+  const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
   const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result); // округление в нижнюю сторону
+  return Math.floor(result);
 }
 
 function getRandomPositiveFloat(a, b, digits = 1) {
@@ -30,9 +29,6 @@ function getRandomPositiveFloat(a, b, digits = 1) {
 const getRandomArrayElement = (elements) =>
   elements[getRandomPositiveInteger(0, elements.length - 1)];
 
-//Функция создает сообщение об ошибке
-const ALERT_SHOW_TIME = 5000;
-
 const showAlert = (message) => {
   const alert = document.createElement('div');
   alert.style.position = 'absolute';
@@ -47,7 +43,7 @@ const showAlert = (message) => {
   alert.textContent = message;
   document.body.append(alert);
 
-  setTimeout(() => { //таймер чтобы алерт исчех
+  setTimeout(() => {
     alert.remove();
   }, ALERT_SHOW_TIME);
 };

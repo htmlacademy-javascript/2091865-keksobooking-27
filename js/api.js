@@ -4,7 +4,6 @@ const getData = (onSuccess, onFail) => {
       if (response.ok) {
         return response.json();
       }
-      throw new Error('Не удалось загрузить объявление');
     })
     .then((data) => {
       onSuccess(data);
@@ -33,6 +32,5 @@ const sendData = (onSuccess, onFail, body) => {
       onFail();
     });
 };
-
 
 export{getData, sendData};
