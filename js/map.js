@@ -1,5 +1,8 @@
 import {activatePage} from './page-filter.js';
 import {createCard} from './card.js';
+import { getFilteredOffers, onFiltersChange } from './map-filter.js';
+import { getData } from './api.js';
+import {showAlert} from './util.js';
 
 const coordinate = {
   lat: 35.68351,
@@ -10,18 +13,7 @@ const zoom = 10;
 
 const address = document.querySelector('#address');
 
-const map = L.map('map-canvas')
-  .on('load', () => {
-    activatePage(true);
-  })
-  .setView(coordinate, zoom);
-
-L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  },
-).addTo(map);
+const map = L.map('map-canvas');
 
 const mainPinIcon = L.icon({
   iconUrl: './img/main-pin.svg',
@@ -63,11 +55,46 @@ const createMarkers = (offers) => {
   });
 };
 
-const onDataLoad = (offers) => {
-  const offersCount = 10;
-  markerGroup.clearLayers();
-  createMarkers(offers.slice(0, offersCount));
-  activatePage(true);
+const debounce = (callback, timeoutDelay = 500) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
+
+const onDataLoad = (data) => {
+  createMarkers(getFilteredOffers(data));
+  activatePage();
+};
+
+const onDataFailed = () => {
+  showAlert('Не удалось загрузить объявления.');
+};
+
+const setFilteredMarkers = () => {
+  getData((offers) => {
+    createMarkers(getFilteredOffers(offers));
+    onFiltersChange(debounce(() => {
+      markerGroup.clearLayers();
+      createMarkers(getFilteredOffers(offers));
+    }));
+  }, onDataFailed);
+};
+
+const showMap = () => {
+  map.on('load', () => {
+    activatePage(true);
+    setFilteredMarkers();
+  });
+  map.setView(coordinate, zoom);
+
+  L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    },
+  ).addTo(map);
 };
 
 mainPinMarker.on('moveend', (evt) => {
@@ -80,7 +107,8 @@ const setMainPinMarker = () => {
     coordinate);
 
   map.setView(
-    coordinate, zoom);
+    coordinate,
+    zoom);
 };
 
 const resetMap = () => {
@@ -88,6 +116,7 @@ const resetMap = () => {
   map.closePopup();
   markerGroup.clearLayers();
   address.value = `${coordinate.lat} ${coordinate.lng}`;
+  getData(onDataLoad, onDataFailed);
 };
 
-export{resetMap, createMarkers, onDataLoad};
+export{resetMap, onDataLoad, showMap};

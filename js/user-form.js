@@ -1,4 +1,5 @@
 import { sendData } from './api.js';
+import { resetImages } from './avatar.js';
 import {resetMap} from './map.js';
 import {showSuccessMessage, showErrorMessage} from './message.js';
 
@@ -50,8 +51,6 @@ const pristine = new Pristine(form , {
   errorTextClass: 'ad-form__error'
 });
 
-//валидация комнат и гостей
-
 const validateCapacity = () => roomsToGuests[roomNumberElement.value].includes(capacityElement.value);
 
 const getCapacityError = () =>
@@ -75,12 +74,10 @@ const onCapacityChange = () => {
 roomNumberElement.addEventListener('change', onRoomsNumberChange);
 capacityElement.addEventListener('change', onCapacityChange);
 
-//заголовок!!!!!!!!!!!!!!!!!!!!!
 const validateTitle = (value) => value.length >= minLength && value.length <= maxLength;
 
 pristine.addValidator(title, validateTitle, 'от 30 до 100 символов');
 
-//цены!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 const validatePrice = (value) => value <= maxPrice && value >= minPrices[typeOfHouse.value];
 const getPriceErrorMessage = (value) => {
   if (value < minPrices[typeOfHouse.value]) {
@@ -96,7 +93,6 @@ typeOfHouse.addEventListener('change', () => {
   price.placeholder = minPrices[typeOfHouse.value];
 });
 
-//слайдер
 const sliderElement = document.querySelector('.ad-form__slider');
 
 noUiSlider.create(sliderElement, {
@@ -124,7 +120,6 @@ sliderElement.noUiSlider.on('change', () => {
 
 price.addEventListener('change', () => sliderElement.noUiSlider.set(price.value));
 
-//время заезда и выезда
 const onTimeInChange = () => {
   timeOut.value = timeIn.value;
 };
@@ -137,15 +132,12 @@ timeIn.addEventListener('change', onTimeInChange);
 
 timeOut.addEventListener('change', onTimeOutChange);
 
-pristine.addValidator(onTimeInChange, onTimeOutChange);
-
 form.addEventListener('change', (evt) => {
   if (!pristine.validate()) {
     evt.preventDefault();
   }
 });
 
-//новая!!!!!!!!!!!!!!!!!!!!
 const blockButtonSubmit = () => {
   submitButton.disabled = true;
   submitButton.textContent = 'Отправляю...';
@@ -155,16 +147,18 @@ const unlockButtonSubmit = () => {
   submitButton.textContent = 'Опубликовать';
 };
 
-const setOnFormReset = () => { //похожие объявления тоже сбрасываются
+const setOnFormReset = () => {
   form.reset();
   mapFilters.reset();
   resetMap();
   pristine.reset();
   sliderElement.noUiSlider.reset();
+  resetImages();
 };
 
 const onSendSuccess = () => {
   showSuccessMessage();
+  setOnFormReset();
 };
 const onSendFail = () => {
   showErrorMessage();
@@ -189,9 +183,9 @@ const setUserFormSubmit = (onSuccess, onFail) => {
   });
 };
 
-setUserFormSubmit(onSendSuccess, onSendFail);//как посмотреть сообщение об ошибке?
+setUserFormSubmit(onSendSuccess, onSendFail);
 
-resetButton.addEventListener('click', (evt) => { //после отправки и очистки исчезает скролл
+resetButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   setOnFormReset();
 });
