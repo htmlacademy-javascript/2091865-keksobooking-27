@@ -164,7 +164,7 @@ const onSendFail = () => {
   showErrorMessage();
 };
 
-const setUserFormSubmit = (onSuccess, onFail) => {
+const setUserFormSubmit = (onSuccess) => {
   form.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const formData = new FormData(evt.target);
@@ -176,7 +176,7 @@ const setUserFormSubmit = (onSuccess, onFail) => {
           unlockButtonSubmit();
         },
         () => {
-          onFail();
+          onSendFail();
           unlockButtonSubmit();
         }, formData);
     }
